@@ -1,8 +1,9 @@
 import db
 import json
 
-from github import Github
-from pprint import pprint
+from datetime import datetime
+from github   import Github
+from pprint   import pprint
 
 if __name__ == '__main__':
     global git
@@ -11,13 +12,25 @@ if __name__ == '__main__':
         git = Github(data['githubAccessToken'])
     raw.close()
 
-    # Full sync of the org data
+    today = datetime.now().date()
+
+    # Do a complete sync of all metadata
     for org in data['organizations']:
-        # General data
+        print("# Organization: %s" % org)
+
+        # Full sync of the org data
         orgobj = git.get_organization(org)
         db.add_organization(org, vars(orgobj)['_rawData'])
 
-        # Now the projects
+        # Full sync of the project data
         for project in orgobj.get_repos(type='all'):
+            print("## Project: %s" % project.name)
             db.add_project(org, project.name, vars(project)['_rawData'])
         
+            # Now we gather all the issues
+            print("- Writing issues")
+            db.add_issues(org, project.name, project.get_issues())
+
+            # Now we gather all the prs
+            print("- Writing PRs")
+            db.add_prs(org, project.name, project.get_pulls())
