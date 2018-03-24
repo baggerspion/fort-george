@@ -1,6 +1,6 @@
+import db
 import json
 
-from datetime import datetime, timedelta
 from github import Github
 from pprint import pprint
 
@@ -11,26 +11,13 @@ if __name__ == '__main__':
         git = Github(data['githubAccessToken'])
     raw.close()
 
-    # Replicate zalando.github.io
+    # Full sync of the org data
     for org in data['organizations']:
-        metrics = {}
-        languages = []
-        totals = [0, 0, 0]
-        for project in git.get_organization(org).get_repos():
-            language = project.language
-            forks    = project.forks_count
-            stars    = project.stargazers_count
-            #team     = project.get_collaborators().totalCount
-            metrics[project.name] = [language, forks, stars]
-    
-            # Gather total metrics
-            if language is not None:
-                if language not in languages: 
-                    languages.append(language)
-            totals[0] += forks
-            totals[1] += stars
-            totals[2] += 1
+        # General data
+        orgobj = git.get_organization(org)
+        db.add_organization(org, vars(orgobj)['_rawData'])
 
-        # Print the result
-        print("%s - Stars: %s, Repositories: %s, Languages: %s" %
-              (org, totals[1], totals[2], len(languages)))
+        # Now the projects
+        for project in orgobj.get_repos(type='all'):
+            db.add_project(org, project.name, vars(project)['_rawData'])
+        
