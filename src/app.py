@@ -12,29 +12,29 @@ if __name__ == '__main__':
         git = Github(data['githubAccessToken'])
     raw.close()
 
-    today = datetime.now().date()
-
     # Do a complete sync of all metadata
     for org in data['organizations']:
-        print("# Organization: %s" % org)
-
-        # Full sync of the org data
+        print("# Organisation: %s" % org)
         orgobj = git.get_organization(org)
         db.add_organization(org, vars(orgobj)['_rawData'])
 
-        # Full sync of the project data
         for project in orgobj.get_repos(type='all'):
             print("## Project: %s" % project.name)
             db.add_project(org, project.name, vars(project)['_rawData'])
 
-            # Now we gather all the commits
-            print("- Writing commits")
-            db.add_commits(org, project.name, project.get_commits())
-        
-            # Now we gather all the issues
-            print("- Writing issues")
-            db.add_issues(org, project.name, project.get_issues())
+            # Add all the project data
+            db.add_branches(project.name, project.get_branches()) 
+            db.add_collaborators(project.name, project.get_collaborators())
+            db.add_commits(project.name, project.get_commits())
+            db.add_contributors(project.name, project.get_contributors())
+            db.add_issues(project.name, project.get_issues())
+            db.add_languages(project.name, project.get_languages())
+            db.add_prs(project.name, project.get_pulls())
+            db.add_stars(project.name, project.get_stargazers())
 
-            # Now we gather all the prs
-            print("- Writing PRs")
-            db.add_prs(org, project.name, project.get_pulls())
+            # Stats
+            ## Contributors
+            ## Commit Activity
+            ## Code Frequency
+            ## Participation
+            ## Punch Card
