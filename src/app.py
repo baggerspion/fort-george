@@ -26,6 +26,10 @@ if __name__ == '__main__':
         for project in orgobj.get_repos(type='all'):
             print("## Project: %s" % project.name)
             db.add_project(org, project.name, vars(project)['_rawData'])
+
+            # Now we gather all the commits
+            print("- Writing commits")
+            db.add_commits(org, project.name, project.get_commits())
         
             # Now we gather all the issues
             print("- Writing issues")

@@ -34,3 +34,14 @@ def add_prs(org, project, prs):
         json.dumps(data).encode())
     batch.write()
     orgdb.close()
+
+def add_commits(org, project, commits):
+    orgdb = plyvel.DB('../data/', create_if_missing=True)
+    projdb = orgdb.prefixed_db(org.encode()) 
+    commitsdb = projdb.prefixed_db(("%s-commits" % project).encode())
+    batch = commitsdb.write_batch()
+    for commit in commits:
+        data = vars(commit)['_rawData']     
+        batch.put(str(commit.sha).encode(), json.dumps(data).encode())
+    batch.write()
+    orgdb.close()
