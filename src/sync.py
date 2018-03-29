@@ -5,7 +5,7 @@ from datetime import datetime
 from github   import Github
 from pprint   import pprint
 
-if __name__ == '__main__':
+def complete_sync():
     global git
     with open('app.json') as raw:
         data = json.loads(raw.read())
