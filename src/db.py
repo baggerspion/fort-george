@@ -12,10 +12,11 @@ def add_project(org, name, data):
     part.put(name.encode(), json.dumps(data).encode())
     projdb.close()
 
-def add_branches(project, data):
+def add_branches(org, project, data):
     print("- Branches")
     branchdb = plyvel.DB('../data/branches/', create_if_missing=True)
-    part = branchdb.prefixed_db(project.encode())
+    orgs = branchdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for branch in data:
         content = vars(branch)['_rawData']
@@ -23,10 +24,11 @@ def add_branches(project, data):
     wb.write()
     branchdb.close()
 
-def add_collaborators(project, data):
+def add_collaborators(org, project, data):
     print("- Collaborators")
     collabdb = plyvel.DB('../data/collaborators/', create_if_missing=True)
-    part = collabdb.prefixed_db(project.encode())
+    orgs = collabdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for collaborator in data:
         content = vars(collaborator)['_rawData']
@@ -34,21 +36,23 @@ def add_collaborators(project, data):
     wb.write()
     collabdb.close()
 
-def add_commits(project, data):
+def add_commits(org, project, data):
     print("- Commits")
     commitdb = plyvel.DB('../data/commits/', create_if_missing=True)
-    part = commitdb.prefixed_db(project.encode())
+    orgs = commitdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for commit in data:
         content = vars(commit)['_rawData']
-        wb.put(str(commit.sha).encode(), json.dumps(content).encode())
+        wb.put(str(commit.date).encode(), json.dumps(content).encode())
     wb.write()
     commitdb.close()
 
-def add_contributors(project, data):
+def add_contributors(org, project, data):
     print("- Contributors")
     contribdb = plyvel.DB('../data/contributors/', create_if_missing=True)
-    part = contribdb.prefixed_db(project.encode())
+    orgs = contribdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for contributor in data:
         content = vars(contributor)['_rawData']
@@ -56,10 +60,11 @@ def add_contributors(project, data):
     wb.write()
     contribdb.close()
 
-def add_issues(project, data):
+def add_issues(org, project, data):
     print("- Issues")
     issuesdb = plyvel.DB('../data/issues/', create_if_missing=True)
-    part = issuesdb.prefixed_db(project.encode())
+    orgs = issuesdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for issue in data:
         content = vars(issue)['_rawData']
@@ -76,7 +81,8 @@ def add_languages(project, data):
 def add_prs(project, data):
     print("- PRs")
     pullsdb = plyvel.DB('../data/prs/', create_if_missing=True)
-    part = pullsdb.prefixed_db(project.encode())
+    orgs = pullsdb.prefixed_db(org.encode())
+    part = orgs.prefixed_db(project.encode())
     wb = part.write_batch()
     for pr in data:
         content = vars(pr)['_rawData']

@@ -23,13 +23,13 @@ def complete_sync():
             db.add_project(org, project.name, vars(project)['_rawData'])
 
             # Add all the project data
-            db.add_branches(project.name, project.get_branches()) 
-            db.add_collaborators(project.name, project.get_collaborators())
-            db.add_commits(project.name, project.get_commits())
-            db.add_contributors(project.name, project.get_contributors())
-            db.add_issues(project.name, project.get_issues())
+            db.add_branches(org, project.name, project.get_branches()) 
+            db.add_collaborators(org, project.name, project.get_collaborators())
+            db.add_commits(org, project.name, project.get_commits())
+            db.add_contributors(org, project.name, project.get_contributors())
+            db.add_issues(org, project.name, project.get_issues())
             db.add_languages(project.name, project.get_languages())
-            db.add_prs(project.name, project.get_pulls())
+            db.add_prs(org, project.name, project.get_pulls())
             db.add_stars(project.name, project.get_stargazers())
 
             # Stats
