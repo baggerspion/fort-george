@@ -79,7 +79,7 @@ def add_languages(project, data):
     langsdb.put(project.encode(), json.dumps(data).encode())
     langsdb.close()
 
-def add_prs(project, data):
+def add_prs(org, project, data):
     print("- PRs")
     pullsdb = plyvel.DB('../data/prs/', create_if_missing=True)
     orgs = pullsdb.prefixed_db(org.encode())
