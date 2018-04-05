@@ -1,5 +1,6 @@
 import json
 import plyvel
+import pprint
 
 def add_organization(name, data):
     orgdb = plyvel.DB('../data/orgs/', create_if_missing=True)
@@ -44,7 +45,7 @@ def add_commits(org, project, data):
     wb = part.write_batch()
     for commit in data:
         content = vars(commit)['_rawData']
-        wb.put(str(commit.date).encode(), json.dumps(content).encode())
+        wb.put(str(content['commit']['author']['date']).encode(), json.dumps(content).encode())
     wb.write()
     commitdb.close()
 
